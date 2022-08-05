@@ -59,10 +59,8 @@ type containerParameters struct {
 func CreateOrUpdateStateFul(namespace string, stsMeta metav1.ObjectMeta, params statefulSetParameters, ownerDef metav1.OwnerReference, containerParams containerParameters, sidecars *[]redisv1beta1.Sidecar) error {
 	logger := statefulSetLogger(namespace, stsMeta.Name)
 	storedStateful, err := GetStatefulSet(namespace, stsMeta.Name)
-	logger.Info("containerParams:%v", containerParams)
 	s, _ := json.Marshal(containerParams)
-	logger.Info("containerParams:%s", string(s))
-
+	logger.Info(string(s))
 	statefulSetDef := generateStatefulSetsDef(stsMeta, params, ownerDef, containerParams, getSidecars(sidecars))
 	if err != nil {
 		if err := patch.DefaultAnnotator.SetLastAppliedAnnotation(statefulSetDef); err != nil {
