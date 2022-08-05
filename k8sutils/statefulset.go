@@ -2,6 +2,7 @@ package k8sutils
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"path"
 	redisv1beta1 "redis-operator/api/v1beta1"
@@ -58,6 +59,10 @@ type containerParameters struct {
 func CreateOrUpdateStateFul(namespace string, stsMeta metav1.ObjectMeta, params statefulSetParameters, ownerDef metav1.OwnerReference, containerParams containerParameters, sidecars *[]redisv1beta1.Sidecar) error {
 	logger := statefulSetLogger(namespace, stsMeta.Name)
 	storedStateful, err := GetStatefulSet(namespace, stsMeta.Name)
+	logger.Info("containerParams:%v", containerParams)
+	s, _ := json.Marshal(containerParams)
+	logger.Info("containerParams:%s", string(s))
+
 	statefulSetDef := generateStatefulSetsDef(stsMeta, params, ownerDef, containerParams, getSidecars(sidecars))
 	if err != nil {
 		if err := patch.DefaultAnnotator.SetLastAppliedAnnotation(statefulSetDef); err != nil {
@@ -345,6 +350,9 @@ func getVolumeMount(name string, persistenceEnabled *bool, externalConfig *strin
 
 // getProbeInfo generate probe for Redis StatefulSet
 func getProbeInfo(probe *redisv1beta1.Probe) *corev1.Probe {
+	if probe == nil {
+		return &corev1.Probe{}
+	}
 	return &corev1.Probe{
 		InitialDelaySeconds: probe.InitialDelaySeconds,
 		PeriodSeconds:       probe.PeriodSeconds,
