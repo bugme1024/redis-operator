@@ -350,9 +350,7 @@ func getVolumeMount(name string, persistenceEnabled *bool, externalConfig *strin
 func getProbeInfo(probe *redisv1beta1.Probe) *corev1.Probe {
 	logger := statefulSetLogger("namespace", "storedStateful.Name")
 	logger.Info("this is log")
-	logger.Info("probe:", probe)
 	if probe == nil {
-		logger.Info("this is return")
 		return &corev1.Probe{}
 	}
 	return &corev1.Probe{
