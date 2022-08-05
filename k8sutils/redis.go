@@ -63,6 +63,7 @@ func ExecuteRedisClusterCommand(cr *redisv1beta1.RedisCluster) {
 		if err != nil {
 			logger.Error(err, "Error in getting redis password")
 		}
+		logger.Info("pass:", pass)
 		cmd = append(cmd, "-a")
 		cmd = append(cmd, pass)
 	}

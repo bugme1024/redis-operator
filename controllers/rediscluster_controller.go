@@ -80,7 +80,14 @@ func (r *RedisClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request
 	if err != nil {
 		return ctrl.Result{}, err
 	}
-
+	redisLeaderInfo, err := k8sutils.GetStatefulSet(instance.Namespace, instance.ObjectMeta.Name+"-leader")
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	if int32(redisLeaderInfo.Status.ReadyReplicas) != leaderReplicas {
+		reqLogger.Info("Redis leader  nodes are not ready yet", "Ready.Replicas", strconv.Itoa(int(redisLeaderInfo.Status.ReadyReplicas)), "Expected.Replicas", leaderReplicas)
+		return ctrl.Result{RequeueAfter: time.Second * 5}, nil
+	}
 	err = k8sutils.CreateRedisFollower(instance)
 	if err != nil {
 		return ctrl.Result{}, err
@@ -97,10 +104,10 @@ func (r *RedisClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request
 		return ctrl.Result{}, err
 	}
 
-	redisLeaderInfo, err := k8sutils.GetStatefulSet(instance.Namespace, instance.ObjectMeta.Name+"-leader")
-	if err != nil {
-		return ctrl.Result{}, err
-	}
+	// redisLeaderInfo, err := k8sutils.GetStatefulSet(instance.Namespace, instance.ObjectMeta.Name+"-leader")
+	// if err != nil {
+	// 	return ctrl.Result{}, err
+	// }
 	redisFollowerInfo, err := k8sutils.GetStatefulSet(instance.Namespace, instance.ObjectMeta.Name+"-follower")
 	if err != nil {
 		return ctrl.Result{}, err
