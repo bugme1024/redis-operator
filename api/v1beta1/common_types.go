@@ -34,6 +34,11 @@ type RedisConfig struct {
 	AdditionalRedisConfig *string `json:"additionalRedisConfig,omitempty"`
 }
 
+// SentinelConfig defines the external configuration of Sentinel
+type SentinelConfig struct {
+	AdditionalSentinelConfig *string `json:"additionalSentinelConfig,omitempty"`
+}
+
 // ExistingPasswordSecret is the struct to access the existing secret
 type ExistingPasswordSecret struct {
 	Name *string `json:"name,omitempty"`
