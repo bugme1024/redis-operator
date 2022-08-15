@@ -69,21 +69,23 @@ func configureRedisSentinelClient(cr *redisv1beta1.RedisSentinel, podName string
 		portStr = redisPort
 	}
 	if cr.Spec.KubernetesConfig.ExistingPasswordSecret != nil {
-		pass, err := getRedisPassword(cr.Namespace, *cr.Spec.KubernetesConfig.ExistingPasswordSecret.Name, *cr.Spec.KubernetesConfig.ExistingPasswordSecret.Key)
-		if err != nil {
-			logger.Error(err, "Error in getting redis password")
-		}
+		// pass, err := getRedisPassword(cr.Namespace, *cr.Spec.KubernetesConfig.ExistingPasswordSecret.Name, *cr.Spec.KubernetesConfig.ExistingPasswordSecret.Key)
+		pass = ""
+		// if err != nil {
+		// 	logger.Error(err, "Error in getting redis password")
+		// }
 	} else {
 		pass = ""
 	}
 
 	// connect sentinel: no need set password
-	if podType == "" {
+	if podType == SentinelPodType {
 		pass = ""
 	}
 
 	client = redis.NewClient(&redis.Options{
-		Addr:      getRedisServerIP(redisInfo) + portStr,
+		// Addr:      getRedisServerIP(redisInfo) + portStr,
+		Addr:      "127.0.0.1:6379",
 		Password:  pass,
 		DB:        0,
 		TLSConfig: getRedisSentinelTLSConfig(cr, redisInfo),

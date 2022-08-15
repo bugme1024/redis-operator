@@ -60,7 +60,7 @@ type RedisSentinelSpec struct {
 func (cr *RedisSentinelSpec) GetReplicaCounts(t string) int32 {
 	var replica int32
 	if t == "redis" && cr.Redis.Replicas != nil {
-		replica = cr.Redis.Replicas
+		replica = *cr.Redis.Replicas
 	} else if t == "sentinel" && cr.Sentinel.Replicas != nil {
 		replica = *cr.Sentinel.Replicas
 	}
